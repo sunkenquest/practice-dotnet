@@ -2,6 +2,8 @@ using System;
 using practice_dotnet.Data;
 using Pomelo.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using practice_dotnet.Repository.Interface;
+using practice_dotnet.Repository.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
 	new MySqlServerVersion(new Version(8, 0, 39))));
+
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 var app = builder.Build();
 
