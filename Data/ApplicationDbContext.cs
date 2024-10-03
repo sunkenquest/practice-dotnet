@@ -10,6 +10,8 @@ namespace practice_dotnet.Data
 		}
 
         public DbSet<Employee> Employees { get; set; }
+		public DbSet<Department> Department { get; set; }
+
 
 		//handle soft deleted records not be included in query
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

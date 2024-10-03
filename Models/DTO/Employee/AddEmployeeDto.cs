@@ -1,6 +1,6 @@
-﻿namespace practice_dotnet.Models.DTO
+﻿namespace practice_dotnet.Models.DTO.Employee
 {
-    public class UpdateEmployeeDto
+    public class AddEmployeeDto
     {
         public required string Name { get; set; }
         public required string Email { get; set; }
