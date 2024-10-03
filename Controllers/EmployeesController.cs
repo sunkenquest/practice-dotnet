@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using practice_dotnet.Data;
-using practice_dotnet.Models.DTO;
+using practice_dotnet.Models.DTO.Employee;
 using practice_dotnet.Models.Entities;
 using practice_dotnet.Repository.Interface;
 using practice_dotnet.utils;
