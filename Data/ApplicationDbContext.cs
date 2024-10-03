@@ -1,32 +1,42 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using practice_dotnet.Models.Entities;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace practice_dotnet.Data
 {
-	public class ApplicationDbContext : DbContext
+	public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 	{
-		public ApplicationDbContext(DbContextOptions options) : base(options)
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+			: base(options)
 		{
 		}
 
-        public DbSet<Employee> Employees { get; set; }
+		public DbSet<Employee> Employees { get; set; }
 		public DbSet<Department> Department { get; set; }
 
-
-		//handle soft deleted records not be included in query
+		// Handle soft-deleted records not being included in query results
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			base.OnModelCreating(modelBuilder);  // Must call the base method for Identity to work properly
+
 			modelBuilder.Entity<Employee>().HasQueryFilter(e => e.DeletedAt == null);
+
+			// You can add more query filters here if necessary
 		}
 
-		// handle auto update of timestamps
+		// Handle auto update of timestamps
 		public override int SaveChanges()
 		{
 			HandleTimestamps();
 			return base.SaveChanges();
 		}
 
-		// handle auto update of timestamps
+		// Handle auto update of timestamps (async)
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
 			HandleTimestamps();
@@ -50,12 +60,11 @@ namespace practice_dotnet.Data
 				}
 
 				var updatedAtProp = entity.GetType().GetProperty("UpdatedAt");
-				if (updatedAtProp != null && entry.State == EntityState.Modified)
+				if (updatedAtProp != null && (entry.State == EntityState.Modified || entry.State == EntityState.Added))
 				{
 					updatedAtProp.SetValue(entity, DateTime.Now);
 				}
 			}
 		}
-
 	}
 }
