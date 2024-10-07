@@ -6,6 +6,8 @@ using practice_dotnet.Repository.Interface;
 using practice_dotnet.Repository.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using System.Net.Mail;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,8 +61,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
 	new MySqlServerVersion(new Version(8, 0, 39))));
 
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 
