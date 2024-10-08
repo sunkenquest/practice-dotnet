@@ -77,4 +77,20 @@ public class AuthController : Controller
                 "Error registering.");
         }
     }
+
+    [HttpPost("/auth/logout")]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            _authRepository.ClearTokenCookie();
+            await _signInManager.SignOutAsync();
+            return Redirect("/");
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "Error occurred during logout.");
+        }
+    }
 }

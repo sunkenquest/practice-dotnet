@@ -108,7 +108,9 @@ app.MapIdentityApi<IdentityUser>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
+    app.UseExceptionHandler("/Error/GenericError");
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
+    app.UseSwagger();
 	app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
@@ -121,5 +123,19 @@ app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.UseStatusCodePages(context =>
+{
+    if (context.HttpContext.Response.StatusCode == 404)
+    {
+        context.HttpContext.Response.Redirect("/Error/404");
+    }
+    else if (context.HttpContext.Response.StatusCode == 401)
+    {
+        context.HttpContext.Response.Redirect("/Error/401");
+    }
+
+    return Task.CompletedTask;
+});
 
 app.Run();
