@@ -10,7 +10,8 @@ namespace practice_dotnet.Repository.Interface
         Task<SignInResult> Login(LoginDtoInput model);
         Task<IdentityResult> Register(RegisterDto model);
         Task<string> GenerateAccessToken(string email);
-
         void SetTokenInCookie(string token, int expirationInMinutes);
+        void ClearTokenCookie();
+        bool GetTokenFromCookie();
     }
 }

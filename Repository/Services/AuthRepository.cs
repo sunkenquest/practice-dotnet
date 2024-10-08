@@ -67,7 +67,17 @@ namespace practice_dotnet.Repository.Services
                 Secure = false  // Set to true in production for HTTPS
             };
 
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("AccessToken", token, cookieOptions);
+            _httpContextAccessor?.HttpContext?.Response.Cookies.Append("AccessToken", token, cookieOptions);
+        }
+
+        public void ClearTokenCookie()
+        {
+            _httpContextAccessor?.HttpContext?.Response.Cookies.Delete("AccessToken");
+        }
+
+        public bool GetTokenFromCookie()
+        {
+            return _httpContextAccessor.HttpContext?.Request.Cookies.TryGetValue("AccessToken", out _) ?? false;
         }
     }
 }
