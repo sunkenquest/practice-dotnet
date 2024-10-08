@@ -1,6 +1,9 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using practice_dotnet.Models;
 using practice_dotnet.Models.DTO.Auth;
 using practice_dotnet.Repository.Interface;
@@ -12,16 +15,18 @@ public class AuthController : Controller
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly IAuthRepository _authRepository;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IAuthRepository authRepository )
+    public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IAuthRepository authRepository, IConfiguration configuration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _authRepository = authRepository;
+        _configuration = configuration;
     }
 
-    [HttpPost("/Auth/Login")]
-    public async Task<IActionResult> Login([FromForm] LoginDto model)
+    [HttpPost("/auth/login")]
+    public async Task<IActionResult> Login([FromForm] LoginDtoInput model)
     {
         try
         {
@@ -31,7 +36,11 @@ public class AuthController : Controller
 
                 if (result.Succeeded)
                 {
-                    return Ok(new { Success = true });
+                    var token = await _authRepository.GenerateAccessToken(model.Email);
+
+                    _authRepository.SetTokenInCookie(token, 60);
+
+                    return RedirectToAction("Index", "Home");
                 }
                 return Unauthorized();
             }
@@ -42,10 +51,9 @@ public class AuthController : Controller
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "Error logging in.");
         }
-
     }
 
-    [HttpPost("/Auth/Register")]
+    [HttpPost("/auth/register")]
     public async Task<IActionResult> Register([FromForm] RegisterDto model)
     {
         try
@@ -69,23 +77,4 @@ public class AuthController : Controller
                 "Error registering.");
         }
     }
-
-    [HttpGet("ConfirmEmail")]
-    public async Task<IActionResult> ConfirmEmail(string userId, string token)
-    {
-        if (userId == null || token == null)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        var result = await _userManager.ConfirmEmailAsync(user, token);
-        return result.Succeeded ? View("ConfirmEmail") : View("Error");
-    }
-
 }
