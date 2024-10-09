@@ -16,7 +16,7 @@ namespace practice_dotnet.Repository.Services
         {
             var mailMessage = new MailMessage
             {
-                From = new MailAddress("your-email@example.com"),
+                From = new MailAddress("mikco@bpoc.co.jp"),
                 Subject = subject,
                 Body = message,
                 IsBodyHtml = true,
